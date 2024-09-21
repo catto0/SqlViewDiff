@@ -1,12 +1,18 @@
 package tokenizer;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import logger.SimpleLogger;
+
 public class Tokenizer implements ITokenizer
 {
-	private static final int SPACE_SIZE = 1;
+	private static final SimpleLogger LOG = new SimpleLogger(Tokenizer.class, DEBUG);
+
+	private static final List<Character> SPECIAL_CHARACTERS = Arrays.asList(',', '.');
 	private static final List<String> KEYWORDS = Arrays.asList( //
 			"CREATE", "DROP", "DESC", "EXISTS", "ALTER", "VIEW", "AS", "SELECT", "DELETE", "UPDATE", "FORCE", "FROM",
 			"INNER", "LEFT", "RIGHT", "JOIN", "GROUP", "BY", "TOP", ";");
@@ -14,23 +20,15 @@ public class Tokenizer implements ITokenizer
 	@Override
 	public String unifyFormat(String view)
 	{
+		LOG.debug("Unifying view's format.");
 		StringBuilder builder = new StringBuilder(view.length());
-		for (String word : view.split(" "))
+		String preprocessedView = spaceOutSpecialCharacters(view);
+		LOG.debug("Finished preprocessing view %s", preprocessedView);
+
+		for (String word : preprocessedView.split(" "))
 		{
 			if (word.isBlank())
-			{ continue; }
-
-			word = word.replace(";", "").trim();
-
-			if (word.contains(".") || word.contains(","))
 			{
-				for (String subWord : word.split("[\\.\\,]"))
-				{
-					processBrackets(builder, subWord);
-					builder.append(". ");
-				}
-
-				builder.delete(builder.length() - 2, builder.length());
 				continue;
 			}
 
@@ -42,28 +40,42 @@ public class Tokenizer implements ITokenizer
 
 			builder.append(word).append(" ");
 		}
-
 		builder.append(";");
+
+		LOG.debug("Fnished unifying view's format.");
 		return builder.toString();
 	}
 
-	private static void processWords(StringBuilder builder, String words, String splitRegex)
+	private static String spaceOutSpecialCharacters(String view)
 	{
-		for (String word : words.split(splitRegex))
+		StringBuilder builder = new StringBuilder();
+		for (char c : view.toCharArray())
 		{
-			if (word.isBlank())
-			{ continue; }
+			if (SPECIAL_CHARACTERS.contains(c))
+			{
+				LOG.trace("Adding spacing for special character \"%c\"", c);
+				builder.append(" " + c + " ");
+				continue;
+			}
 
-			word = word.replace(";", "").trim();
-			// TODO: recursive
+			if (';' == c)
+			{
+				continue;
+			}
+
+			builder.append(c);
 		}
+
+		return builder.toString();
 	}
 
 	private static void processBrackets(StringBuilder builder, String word)
 	{
+		LOG.trace("Processing brackets for word %s", word);
+
 		int len = word.length();
 		builder.append(word.charAt(0)).append(" ");
-		builder.append(word.substring(1, len - 2).trim()).append(" ");
+		builder.append(word.substring(1, len - 1).trim()).append(" ");
 		builder.append(word.charAt(len - 1)).append(" ");
 	}
 
@@ -82,7 +94,7 @@ public class Tokenizer implements ITokenizer
 		int end = 0;
 		for (String word : view.split(" "))
 		{
-			int beginning = end + SPACE_SIZE;
+			int beginning = end + 1;
 			end = beginning + word.length();
 
 			tokens.add(new Token(word, beginning, end));
