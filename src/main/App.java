@@ -1,7 +1,10 @@
+package main;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
+import tokenizer.Tokenizer;
 
 public class App {
     public static void main(String[] args) 
