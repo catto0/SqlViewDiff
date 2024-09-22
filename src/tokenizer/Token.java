@@ -12,24 +12,19 @@ public class Token
 		MISSING, CHANGED, GOOD,
 	}
 
+	private final String token;
 	private TokenKind kind;
 	private TokenStatus status;
-	private final String token;
 	private final int beginning;
 	private final int end;
 
-	public Token(String token, int beginning, int end)
+	public Token(String token, TokenKind kind, int beginning, int end)
 	{
-		this.kind = TokenKind.WORD;
-		this.status = TokenStatus.GOOD;
+		this.kind = kind;
+		this.status = null;
 		this.token = token;
 		this.beginning = beginning;
 		this.end = end;
-	}
-
-	public void setKind(TokenKind kind)
-	{
-		this.kind = kind;
 	}
 
 	public TokenKind getKind()
@@ -60,5 +55,11 @@ public class Token
 	public int getEnd()
 	{
 		return this.end;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Token [token=\"" + token + "\", kind=" + kind + ", status=" + status + "]";
 	}
 }

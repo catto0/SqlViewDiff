@@ -1,21 +1,21 @@
 package tokenizer;
 
-import static java.lang.System.Logger.Level.DEBUG;
-
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import logger.SimpleLogger;
+import tokenizer.Token.TokenKind;
 
 public class Tokenizer implements ITokenizer
 {
-	private static final SimpleLogger LOG = new SimpleLogger(Tokenizer.class, DEBUG);
+	private static final SimpleLogger LOG = new SimpleLogger(Tokenizer.class, Level.DEBUG);
 
-	private static final List<Character> SPECIAL_CHARACTERS = Arrays.asList(',', '.');
-	private static final List<String> KEYWORDS = Arrays.asList( //
-			"CREATE", "DROP", "DESC", "EXISTS", "ALTER", "VIEW", "AS", "SELECT", "DELETE", "UPDATE", "FORCE", "FROM",
-			"INNER", "LEFT", "RIGHT", "JOIN", "GROUP", "BY", "TOP", ";");
+	private static final Set<Character> SPECIAL_CHARACTERS = Set.of(new Character[] { ',', '.' });
+	private static final Set<String> KEYWORDS = //
+			Set.of(new String[] { "CREATE", "DROP", "DESC", "EXISTS", "ALTER", "VIEW", "AS", "SELECT", "DELETE",
+				"UPDATE", "FORCE", "FROM", "INNER", "LEFT", "RIGHT", "JOIN", "GROUP", "BY", "TOP", ";" });
 
 	@Override
 	public String unifyFormat(String view)
@@ -32,13 +32,13 @@ public class Tokenizer implements ITokenizer
 				continue;
 			}
 
-			if (word.matches("[\\(\\[]{1}.+[\\)\\]]{1}"))
+			if (word.matches("[\\(\\[]{1}[a-zA-Z0-9]+[\\)\\]]{1}|[a-zA-Z0-9]+[\\)\\]]{1}|[\\(\\[]{1}[a-zA-Z0-9]+"))
 			{
 				processBrackets(builder, word);
 				continue;
 			}
 
-			builder.append(word).append(" ");
+			builder.append(word).append(' ');
 		}
 		builder.append(";");
 
@@ -48,7 +48,7 @@ public class Tokenizer implements ITokenizer
 
 	private static String spaceOutSpecialCharacters(String view)
 	{
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder((int) (view.length() * 1.2));
 		for (char c : view.toCharArray())
 		{
 			if (SPECIAL_CHARACTERS.contains(c))
@@ -73,17 +73,27 @@ public class Tokenizer implements ITokenizer
 	{
 		LOG.trace("Processing brackets for word %s", word);
 
-		int len = word.length();
-		builder.append(word.charAt(0)).append(" ");
-		builder.append(word.substring(1, len - 1).trim()).append(" ");
-		builder.append(word.charAt(len - 1)).append(" ");
+		int start = 0;
+		if (word.charAt(0) == '[' || word.charAt(0) == '(')
+		{
+			builder.append(word.charAt(0)).append(' ');
+			start++;
+		}
+
+		int end = word.length() - 1;
+		if (word.charAt(end) == ']' || word.charAt(end) == ')')
+		{
+			builder.append(word.substring(start, end)).append(' ').append(word.charAt(end)).append(' ');
+			return;
+		}
+
+		builder.append(word.substring(start, end + 1)).append(' ');
 	}
 
 	@Override
 	public List<Token> tokenize(String view)
 	{
 		List<Token> tokens = createTokens(view);
-		classifyTokens(tokens);
 
 		return tokens;
 	}
@@ -91,20 +101,38 @@ public class Tokenizer implements ITokenizer
 	private static List<Token> createTokens(String view)
 	{
 		List<Token> tokens = new ArrayList<>();
-		int end = 0;
-		for (String word : view.split(" "))
-		{
-			int beginning = end + 1;
-			end = beginning + word.length();
 
-			tokens.add(new Token(word, beginning, end));
+		int endIdx = 0;
+		String[] words = view.split(" ");
+		for (int i = 0; i < words.length; i++)
+		{
+			String word = words[i];
+			int beginningIdx = endIdx + 1;
+			endIdx = beginningIdx + word.length();
+
+			tokens.add(new Token(word, determineKind(word, words), beginningIdx, endIdx));
 		}
 
 		return tokens;
 	}
 
-	private static void classifyTokens(List<Token> tokens)
+	private static TokenKind determineKind(String word, String[] words)
 	{
-		// TODO: set token kind
+		if (KEYWORDS.contains(word))
+		{
+			return TokenKind.KEYWORD;
+		}
+
+		switch (word)
+		{
+		case "[":
+		case "]":
+			return TokenKind.SQUARE_BRACKET;
+		case "(":
+		case ")":
+			return TokenKind.SIMPLE_BRACKET;
+		}
+
+		return TokenKind.WORD;
 	}
 }

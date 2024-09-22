@@ -15,6 +15,4 @@ public interface ISimpleLogger extends Logger
 	void error(String msg, Object... objects);
 
 	void error(Throwable e, String msg, Object... objects);
-
-	boolean isNotLoggable(Level level);
 }

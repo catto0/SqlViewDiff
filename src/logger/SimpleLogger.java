@@ -11,6 +11,8 @@ public class SimpleLogger implements ISimpleLogger
 {
 	private static final Object[] EMPTY = new Object[0];
 
+	private static final int LOG_LINE_LENGHT = 160;
+
 	private Class<?> clazz = null;
 	private Level logLevel = null;
 	private int messageStartsAt = 20;
@@ -27,87 +29,70 @@ public class SimpleLogger implements ISimpleLogger
 		return clazz.getName();
 	}
 
+	@Override
 	public synchronized void trace(String msg, Object... objects)
 	{
-		if (isNotLoggable(TRACE))
+		if (isLoggable(TRACE))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(TRACE, null, message, EMPTY);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(TRACE, null, message, EMPTY);
 	}
 
 	@Override
 	public synchronized void debug(String msg, Object... objects)
 	{
-		if (isNotLoggable(DEBUG))
+		if (isLoggable(DEBUG))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(DEBUG, null, message, EMPTY);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(DEBUG, null, message, EMPTY);
 	}
 
 	@Override
 	public synchronized void warn(String msg, Object... objects)
 	{
-		if (isNotLoggable(WARNING))
+		if (isLoggable(WARNING))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(WARNING, null, message, EMPTY);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(WARNING, null, message, EMPTY);
 	}
 
 	@Override
 	public synchronized void warn(Throwable e, String msg, Object... objects)
 	{
-		if (isNotLoggable(WARNING))
+		if (isLoggable(WARNING))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(WARNING, null, message, e);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(WARNING, null, message, e);
 	}
 
 	@Override
 	public synchronized void error(String msg, Object... objects)
 	{
-		if (isNotLoggable(ERROR))
+		if (isLoggable(ERROR))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(ERROR, null, message, EMPTY);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(ERROR, null, message, EMPTY);
 	}
 
 	@Override
 	public synchronized void error(Throwable e, String msg, Object... objects)
 	{
-		if (isNotLoggable(ERROR))
+		if (isLoggable(ERROR))
 		{
-			return;
+			String message = formatMessage(msg, objects);
+			log(ERROR, null, message, e);
 		}
-
-		String message = formatMessage(msg, objects);
-		log(ERROR, null, message, e);
 	}
 
 	@Override
 	public boolean isLoggable(Level level)
 	{
 		return level.ordinal() >= logLevel.ordinal();
-	}
-
-	@Override
-	public boolean isNotLoggable(Level level)
-	{
-		return !isLoggable(level);
 	}
 
 	private String formatMessage(String message, Object... objects)
@@ -135,19 +120,18 @@ public class SimpleLogger implements ISimpleLogger
 
 	private String formatLog(String msg)
 	{
-		StringBuilder buffer = new StringBuilder();
-
 		String time = "%tH:%<tM:%<tS:%<tL".formatted(System.currentTimeMillis());
-		buffer.append(time);
-		buffer.append(" | ");
-
 		String simpleName = clazz.getSimpleName();
-		int messageStartingIdx = messageStartsAt - clazz.getSimpleName().length() - 3;
-		buffer.append(simpleName);
-		buffer.append(" ".repeat(messageStartingIdx > 0 ? messageStartingIdx : 1));
-		buffer.append(" | ");
+		String nameOffset = " ".repeat(Math.max(messageStartsAt - simpleName.length() - 3, 0));
 
+		StringBuilder buffer = new StringBuilder(
+				time.length() + 3 + simpleName.length() + nameOffset.length() + 3 + msg.length());
+
+		buffer.append(time).append(" | ");
+		buffer.append(simpleName).append(nameOffset).append(" | ");
 		buffer.append(msg);
+
 		return buffer.toString();
 	}
+
 }
