@@ -11,11 +11,9 @@ public class SimpleLogger implements ISimpleLogger
 {
 	private static final Object[] EMPTY = new Object[0];
 
-	private static final int LOG_LINE_LENGHT = 160;
-
 	private Class<?> clazz = null;
 	private Level logLevel = null;
-	private int messageStartsAt = 20;
+	private int messageStartsAt = 25;
 
 	public SimpleLogger(Class<?> clazz, Level logLevel)
 	{
@@ -108,30 +106,44 @@ public class SimpleLogger implements ISimpleLogger
 	@Override
 	public void log(Level level, ResourceBundle bundle, String msg, Throwable thrown)
 	{
-		System.err.println(formatLog(msg));
+		System.err.println(formatLog(level, msg));
 		System.err.println(thrown);
 	}
 
 	@Override
 	public void log(Level level, ResourceBundle bundle, String format, Object... params)
 	{
-		System.out.println(formatLog(format));
+		System.out.println(formatLog(level, format));
 	}
 
-	private String formatLog(String msg)
+	private String formatLog(Level level, String msg)
 	{
-		String time = "%tH:%<tM:%<tS:%<tL".formatted(System.currentTimeMillis());
+		String time = "%tH:%<tM:%<tS,%<tL".formatted(System.currentTimeMillis());
+		String logLevel = getLevelType(level);
 		String simpleName = clazz.getSimpleName();
 		String nameOffset = " ".repeat(Math.max(messageStartsAt - simpleName.length() - 3, 0));
 
-		StringBuilder buffer = new StringBuilder(
-				time.length() + 3 + simpleName.length() + nameOffset.length() + 3 + msg.length());
+		StringBuilder buffer = new StringBuilder(time.length() + 3 + logLevel.length() + 3 + simpleName.length()
+				+ nameOffset.length() + 3 + msg.length());
 
 		buffer.append(time).append(" | ");
+		buffer.append(logLevel).append(" | ");
 		buffer.append(simpleName).append(nameOffset).append(" | ");
 		buffer.append(msg);
 
 		return buffer.toString();
 	}
 
+	private static String getLevelType(Level level)
+	{
+		return switch (level)
+		{
+		case Level.TRACE	-> "TRACE";
+		case Level.DEBUG	-> "DEBUG";
+		case Level.INFO		-> "INFO ";
+		case Level.WARNING	-> "WARN ";
+		case Level.ERROR	-> "ERROR";
+		default				-> throw new IllegalArgumentException("Unexpected value: " + level);
+		};
+	}
 }
