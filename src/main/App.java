@@ -9,13 +9,17 @@ import java.io.IOException;
 import java.util.List;
 
 import logger.SimpleLogger;
-import printer.Printer;
+import printer.SimplePrinter;
+import tokenizer.SimpleTokenizer;
 import tokenizer.Token;
-import tokenizer.Tokenizer;
 
 public class App
 {
 	private static final SimpleLogger LOG = new SimpleLogger(App.class, DEBUG);
+
+	/*
+	 * TODO: Expand to also allow comparison of other sql statements
+	 */
 
 	public static void main(String[] args)
 	{
@@ -55,7 +59,7 @@ public class App
 		LOG.debug(querry.toString());
 //		LOG.debug(querry2.toString());
 
-		Tokenizer tokenizer = new Tokenizer();
+		SimpleTokenizer tokenizer = new SimpleTokenizer();
 		String formattedView = tokenizer.unifyFormat(querry.toString());
 //		String formattedView2 = tokenizer.unifyFormat(querry2.toString());
 		LOG.debug(formattedView);
@@ -66,7 +70,7 @@ public class App
 		LOG.debug(tokens.toString());
 //		LOG.debug(tokens2.toString());
 
-		Printer printer = new Printer();
+		SimplePrinter printer = new SimplePrinter();
 		printer.printToConsole(tokens);
 //		printer.printToConsole(tokens2);
 	}

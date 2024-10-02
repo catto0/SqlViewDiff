@@ -2,7 +2,7 @@ package tokenizer;
 
 import java.util.List;
 
-public interface ITokenizer
+public interface ISimpleTokenizer
 {
 	String unifyFormat(String view);
 

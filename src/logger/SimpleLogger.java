@@ -2,6 +2,7 @@ package logger;
 
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.INFO;
 import static java.lang.System.Logger.Level.TRACE;
 import static java.lang.System.Logger.Level.WARNING;
 
@@ -44,6 +45,16 @@ public class SimpleLogger implements ISimpleLogger
 		{
 			String message = formatMessage(msg, objects);
 			log(DEBUG, null, message, EMPTY);
+		}
+	}
+
+	@Override
+	public void info(String msg, Object... objects)
+	{
+		if (isLoggable(INFO))
+		{
+			String message = formatMessage(msg, objects);
+			log(INFO, null, message, EMPTY);
 		}
 	}
 
@@ -120,15 +131,16 @@ public class SimpleLogger implements ISimpleLogger
 	{
 		String time = "%tH:%<tM:%<tS,%<tL".formatted(System.currentTimeMillis());
 		String logLevel = getLevelType(level);
-		String simpleName = clazz.getSimpleName();
-		String nameOffset = " ".repeat(Math.max(messageStartsAt - simpleName.length() - 3, 0));
+		String simpleClassName = clazz.getSimpleName();
+		String nameAllignment = " ".repeat(Math.max(messageStartsAt - simpleClassName.length() - 3, 0));
 
-		StringBuilder buffer = new StringBuilder(time.length() + 3 + logLevel.length() + 3 + simpleName.length()
-				+ nameOffset.length() + 3 + msg.length());
+		int preallocSize = time.length() + 3 + logLevel.length() + 3 + simpleClassName.length()
+				+ nameAllignment.length() + 3 + msg.length();
+		StringBuilder buffer = new StringBuilder((int) (preallocSize * 1.1));
 
 		buffer.append(time).append(" | ");
 		buffer.append(logLevel).append(" | ");
-		buffer.append(simpleName).append(nameOffset).append(" | ");
+		buffer.append(simpleClassName).append(nameAllignment).append(" | ");
 		buffer.append(msg);
 
 		return buffer.toString();

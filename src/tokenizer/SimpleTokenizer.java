@@ -33,9 +33,9 @@ import java.util.Set;
 
 import logger.SimpleLogger;
 
-public class Tokenizer implements ITokenizer
+public class SimpleTokenizer implements ISimpleTokenizer
 {
-	private static final SimpleLogger LOG = new SimpleLogger(Tokenizer.class, Level.DEBUG);
+	private static final SimpleLogger LOG = new SimpleLogger(SimpleTokenizer.class, Level.DEBUG);
 
 	private static final Set<Character> SPECIAL_CHARACTERS = Set.of(new Character[] { ',', '.' });
 

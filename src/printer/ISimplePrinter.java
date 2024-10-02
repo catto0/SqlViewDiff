@@ -4,7 +4,7 @@ import java.util.List;
 
 import tokenizer.Token;
 
-public interface IPrinter
+public interface ISimplePrinter
 {
 	void printToConsole(List<Token> tokens);
 

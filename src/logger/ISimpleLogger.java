@@ -8,6 +8,8 @@ public interface ISimpleLogger extends Logger
 
 	void debug(String msg, Object... objects);
 
+	void info(String msg, Object... objects);
+
 	void warn(String msg, Object... objects);
 
 	void warn(Throwable e, String msg, Object... objects);
