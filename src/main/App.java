@@ -8,10 +8,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
-import logger.SimpleLogger;
-import printer.SimplePrinter;
 import tokenizer.SimpleTokenizer;
 import tokenizer.Token;
+import tokenizer.TokenStatus;
+import utils.logger.SimpleLogger;
+import utils.printer.SimplePrinter;
 
 public class App
 {
@@ -70,8 +71,25 @@ public class App
 		LOG.debug(tokens.toString());
 //		LOG.debug(tokens2.toString());
 
+		LOG.debug("Adjusting %s to %s", tokens.get(0), TokenStatus.ADDED);
+		tokens.get(0).setStatus(TokenStatus.ADDED);
+		LOG.debug("Adjusting %s to %s", tokens.get(1), TokenStatus.ADDED);
+		tokens.get(1).setStatus(TokenStatus.ADDED);
+		LOG.debug("Adjusting %s to %s", tokens.get(2), TokenStatus.ADDED);
+		tokens.get(2).setStatus(TokenStatus.ADDED);
+		LOG.debug("Adjusting %s to %s", tokens.get(3), TokenStatus.ADDED);
+		tokens.get(3).setStatus(TokenStatus.ADDED);
+		LOG.debug("Adjusting %s to %s", tokens.get(5), TokenStatus.ADDED);
+		tokens.get(4).setStatus(TokenStatus.ADDED);
+
+		LOG.debug("Adjusting %s to %s", tokens.get(11), TokenStatus.MISSING);
+		tokens.get(11).setStatus(TokenStatus.MISSING);
+
+		LOG.debug("Adjusting %s to %s", tokens.get(15), TokenStatus.CHANGED);
+		tokens.get(15).setStatus(TokenStatus.CHANGED);
+
 		SimplePrinter printer = new SimplePrinter();
-		printer.printToConsole(tokens);
+		printer.printToConsole(tokens, 7);
 //		printer.printToConsole(tokens2);
 	}
 }

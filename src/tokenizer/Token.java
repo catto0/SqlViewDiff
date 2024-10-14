@@ -4,11 +4,6 @@ import java.util.Objects;
 
 public class Token
 {
-	public enum TokenStatus
-	{
-		MISSING, CHANGED, GOOD,
-	}
-
 	private final String originalWord;
 	private final String token;
 	private TokenKind kind;
@@ -21,7 +16,7 @@ public class Token
 		this.originalWord = originalWord;
 		this.token = token;
 		this.kind = kind;
-		this.status = null;
+		this.status = TokenStatus.NOT_CHANGED;
 		this.beginning = beginning;
 		this.end = end;
 	}

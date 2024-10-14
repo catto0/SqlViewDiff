@@ -10,21 +10,19 @@ public enum Keyword
 	SELECT("SELECT"), DELETE("DELETE"), UPDATE("UPDATE"), FORCE("FORCE"), FROM("FROM"), WHERE("WHERE"), OUTER("OUTER"),
 	INNER("INNER"), LEFT("LEFT"), RIGHT("RIGHT"), JOIN("JOIN"), GROUP("GROUP"), BY("BY"), TOP("TOP");
 
-	public static final Set<Keyword> PRINT_NEW_LINE_AFTER_KEYWORDS;
-	public static final Set<Keyword> PRINT_NEW_LINE_BEFORE_KEYWORDS;
-	public static final Set<String> LEADING_KEYWORDS;
-	public static final Set<String> DEFINED_KEYWORDS;
-	static
-	{
-		PRINT_NEW_LINE_BEFORE_KEYWORDS = Set.of(SELECT, FROM, WHERE, LEFT, RIGHT, OUTER, INNER, JOIN);
-		PRINT_NEW_LINE_AFTER_KEYWORDS = Set.of(SELECT, FROM, WHERE);
-		LEADING_KEYWORDS = Stream.of(CREATE, VIEW, SELECT, FROM, JOIN, WHERE) //
-				.map(Keyword::value) //
-				.collect(Collectors.toSet());
-		DEFINED_KEYWORDS = Stream.of(Keyword.values()) //
-				.map(Keyword::value) //
-				.collect(Collectors.toSet());
-	}
+	public static final Set<Keyword> PRINT_NEW_LINE_AFTER_KEYWORDS = //
+			Set.of(SELECT, FROM, WHERE);
+
+	public static final Set<Keyword> PRINT_NEW_LINE_BEFORE_KEYWORDS = //
+			Set.of(SELECT, FROM, WHERE, LEFT, RIGHT, OUTER, INNER, JOIN);
+
+	public static final Set<String> LEADING_KEYWORDS = Stream.of(CREATE, VIEW, SELECT, FROM, JOIN, WHERE) //
+			.map(Keyword::value) //
+			.collect(Collectors.toSet());
+
+	public static final Set<String> DEFINED_KEYWORDS = Stream.of(Keyword.values()) //
+			.map(Keyword::value) //
+			.collect(Collectors.toSet());
 
 	private String keyword;
 

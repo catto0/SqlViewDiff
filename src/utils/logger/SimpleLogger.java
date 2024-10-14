@@ -1,4 +1,4 @@
-package logger;
+package utils.logger;
 
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;

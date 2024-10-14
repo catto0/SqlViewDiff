@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import logger.SimpleLogger;
+import utils.logger.SimpleLogger;
 
 public class SimpleTokenizer implements ISimpleTokenizer
 {
